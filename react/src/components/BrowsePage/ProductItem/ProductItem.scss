@@ -1,0 +1,37 @@
+.product-item {
+  cursor: pointer;
+  padding: 5px 25px;
+  background-color: #FFF;
+  border-radius: 5px;
+  margin: 15px;
+  color: black;
+  text-decoration: none;
+  img {
+      display: block;
+      max-width: 240px;
+      width: 100%;
+  }
+  .price-wishlist-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .wishlist {
+      &::before {
+        content: '';
+        cursor: pointer;
+        display: block;
+        background-image: url("../../../assets/icons/wishlist_unselected.svg");
+        background-size: 20px;
+        background-repeat: no-repeat;
+        width: 20px;
+        height: 20px;
+      }
+
+      &.selected {
+        &::before {
+          background-image: url("../../../assets/icons/wishlist_selected.svg");
+        }
+      }
+    }
+  }
+}

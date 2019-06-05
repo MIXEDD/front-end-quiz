@@ -1,10 +1,25 @@
 import React, { Component } from 'react';
-import './App.css';
+import './App.scss';
+import BrowserLayout from './HOC/BrowserLayout/BrowserLayout';
+import ItemInnerLayout from './HOC/ItemInnerLayout/ItemInnerLayout';
+import {Route, Switch} from 'react-router-dom';
+
 
 class App extends Component {
+
   render() {
+
+    let routes = (
+      <Switch>
+          <Route path="/" exact component={BrowserLayout}></Route>
+          <Route path="/:slug" component={ItemInnerLayout}></Route>
+      </Switch>
+    );
+
     return (
-      <h1 className="App-welcome">Welcome!</h1>
+      <div className="App">
+        {routes}
+      </div>
     );
   }
 }

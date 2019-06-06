@@ -5,3 +5,11 @@ export const updateObject = (oldObject, updatedProperties) => {
         ...updatedProperties
     };
 };
+
+export const isItemWishlisted = (wishlisted_items, productID) => {
+    for(let key in wishlisted_items) {
+        if(wishlisted_items[key].productID === productID) return true;
+    }
+
+    return false;
+};

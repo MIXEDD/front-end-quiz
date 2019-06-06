@@ -5,26 +5,56 @@ import * as actions from "../../store/actions";
 import axios from 'axios';
 import ProductItem from './ProductItem/ProductItem';
 import HeaderPart from '../HeaderPart/HeaderPart';
+import {isItemWishlisted} from '../../shared/utility';
 
 class BrowsePage extends Component{
 
     state = {
-        startingPoint: 1,
         loadMoreAvailability: true,
-        loadMoreDisabled: false
+        loadMoreDisabled: false,
     };
 
     fetchData = async () => {
-        const response = await axios.get(`/browse?start=${this.state.startingPoint}`);
-        this.props.updateBrowserItems([...this.props.browserItems, ...response.data.items]);
-        this.setState({startingPoint: this.state.startingPoint + 9});
-        if(this.state.startingPoint >= response.data.totalItems) this.setState({loadMoreAvailability:false});
+        const limit = localStorage.getItem('limit');
+        let response;
+        if(limit) response = await axios.get(`/browse?start=${this.props.startingPoint}&limit=${limit}`);
+        else response = await axios.get(`/browse?start=${this.props.startingPoint}`);
+
+        console.log(this.props.wishlistedItems);
+        const items = response.data.items.map(element => {
+            return {
+                ...element,
+                startingPoint: this.props.startingPoint,
+                wishlisted: isItemWishlisted(this.props.wishlistedItems, element.id)
+            };
+        });
+
+        this.props.updateBrowserItems([...this.props.browserItems, ...items]);
+        if(limit) this.props.updateStartingPoint( parseInt(limit) + 1);
+        else this.props.updateStartingPoint(this.props.startingPoint + 9);
+        if(this.props.startingPoint >= response.data.totalItems) this.setState({loadMoreAvailability:false});
         if(this.state.loadMoreDisabled) this.setState({loadMoreDisabled:false});
     };
 
-    componentWillMount() {
-        this.fetchData();
+    componentDidUpdate(nextProps, nextContext) {
+        this.scrollToLastViewedProduct();
     }
+
+    scrollToLastViewedProduct = () => {
+        const productID = localStorage.getItem('productID');
+        const element = document.getElementById(`${productID}`);
+        if(productID && element) {
+            element.scrollIntoView();
+            localStorage.removeItem('productID');
+            localStorage.removeItem('limit');
+        }
+    };
+
+    componentWillMount = async () => {
+        const response = await axios.get('https://firststdibs-quiz.firebaseio.com/wishlist.json/');
+        this.props.updatedWishlistedItems(response.data);
+        this.fetchData();
+    };
 
     loadMoreProducts = (e) => {
         e.preventDefault();
@@ -57,13 +87,17 @@ class BrowsePage extends Component{
 
 const mapStateToProps = state => {
     return {
-        browserItems: state.browserItems
+        browserItems: state.browserItems,
+        startingPoint: state.startingPoint,
+        wishlistedItems: state.wishlistedItems
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        updateBrowserItems: (browserItems) => dispatch(actions.updateBrowserItems(browserItems))
+        updateBrowserItems: (browserItems) => dispatch(actions.updateBrowserItems(browserItems)),
+        updateStartingPoint: (startingPoint) => dispatch(actions.updateStartingPoint(startingPoint)),
+        updatedWishlistedItems: (wishlistedItems) => dispatch(actions.updateWishlistedItems(wishlistedItems))
     }
 };
 

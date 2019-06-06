@@ -15,23 +15,5 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    .wishlist {
-      &::before {
-        content: '';
-        cursor: pointer;
-        display: block;
-        background-image: url("../../../assets/icons/wishlist_unselected.svg");
-        background-size: 20px;
-        background-repeat: no-repeat;
-        width: 20px;
-        height: 20px;
-      }
-
-      &.selected {
-        &::before {
-          background-image: url("../../../assets/icons/wishlist_selected.svg");
-        }
-      }
-    }
   }
 }

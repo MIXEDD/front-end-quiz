@@ -44,4 +44,9 @@ body {
       background-image: url("./assets/icons/wishlist_selected.svg");
     }
   }
+
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.3;
+  }
 }
